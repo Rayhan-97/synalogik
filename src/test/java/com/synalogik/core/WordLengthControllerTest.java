@@ -55,4 +55,38 @@ class WordLengthControllerTest
                 arguments(List.of(5, 5, 1, 4, 7, 3, 4, 2, 10), 4.556, Set.of(5, 4))
         );
     }
+
+    @ParameterizedTest
+    @MethodSource("reportInputs")
+    void givenWordLengths_whenReport_thenCorrect(List<Integer> wordLengths, String expectedReport)
+    {
+        wordLengths.forEach(wordLengthController::encounteredWordLength);
+
+        String report = wordLengthController.report();
+
+        assertThat(report).isEqualTo(expectedReport);
+    }
+
+    private static Stream<Arguments> reportInputs()
+    {
+        return Stream.of(
+                arguments(List.of(), "Word count = 0"),
+                arguments(List.of(1), """
+                        Word count = 1
+                        Average word length = 1
+                        Number of words of length 1 is 1
+                        The most frequently occurring word length is 1, for words of length 1"""),
+                arguments(List.of(5, 5, 1, 4, 7, 3, 4, 2, 10), """
+                        Word count = 9
+                        Average word length = 4.556
+                        Number of words of length 1 is 1
+                        Number of words of length 2 is 1
+                        Number of words of length 3 is 1
+                        Number of words of length 4 is 2
+                        Number of words of length 5 is 2
+                        Number of words of length 7 is 1
+                        Number of words of length 10 is 1
+                        The most frequently occurring word length is 2, for words of length 4 & 5""")
+        );
+    }
 }

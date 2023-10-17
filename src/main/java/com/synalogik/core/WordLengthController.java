@@ -1,10 +1,13 @@
 package com.synalogik.core;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WordLengthController
 {
-    private final Map<Integer, Integer> wordLengthFrequencies;
+    private final Map<Integer, Long> wordLengthFrequencies;
+    private long totalWordCount;
+    private long highestFrequency;
 
     public WordLengthController()
     {
@@ -13,7 +16,9 @@ public class WordLengthController
 
     public void encounteredWordLength(int length)
     {
-        wordLengthFrequencies.merge(length, 1, (ignored, currentFrequency) -> currentFrequency + 1);
+        totalWordCount++;
+        wordLengthFrequencies.merge(length, 1L, (ignored, currentFrequency) -> currentFrequency + 1);
+        highestFrequency = Math.max(highestFrequency, wordLengthFrequencies.get(length));
     }
 
     public double averageWordLength()
@@ -23,36 +28,32 @@ public class WordLengthController
             return 0;
         }
 
-        int totalNumberOfCharacters = 0;
-        int totalNumberOfWords = 0;
-        for (Map.Entry<Integer, Integer> wordLengthFrequency : wordLengthFrequencies.entrySet())
+        long totalNumberOfCharacters = 0;
+        for (Map.Entry<Integer, Long> wordLengthFrequency : wordLengthFrequencies.entrySet())
         {
             Integer length = wordLengthFrequency.getKey();
-            Integer frequency = wordLengthFrequency.getValue();
+            Long frequency = wordLengthFrequency.getValue();
 
             totalNumberOfCharacters += length * frequency;
-            totalNumberOfWords += frequency;
         }
 
-        return (double) totalNumberOfCharacters / totalNumberOfWords;
+        return (double) totalNumberOfCharacters / totalWordCount;
     }
 
     public Set<Integer> mostFrequentWordLengths()
     {
-        Optional<Integer> highestFrequency = wordLengthFrequencies.values().stream().max(Comparator.naturalOrder());
-
-        if (highestFrequency.isEmpty())
+        if (totalWordCount == 0)
         {
             return Collections.emptySet();
         }
 
         Set<Integer> mostFrequentWordLengths = new HashSet<>();
 
-        for (Map.Entry<Integer, Integer> wordLengthFrequency : wordLengthFrequencies.entrySet())
+        for (Map.Entry<Integer, Long> wordLengthFrequency : wordLengthFrequencies.entrySet())
         {
-            Integer frequency = wordLengthFrequency.getValue();
+            Long frequency = wordLengthFrequency.getValue();
 
-            if (frequency.equals(highestFrequency.get()))
+            if (frequency.equals(highestFrequency))
             {
                 mostFrequentWordLengths.add(wordLengthFrequency.getKey());
             }
@@ -63,6 +64,32 @@ public class WordLengthController
 
     public String report()
     {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append("Word count = %d\n".formatted(totalWordCount));
+
+        if (totalWordCount == 0)
+        {
+            return sb.toString().stripTrailing();
+        }
+
+        sb.append("Average word length = %s\n".formatted(formatAverage(averageWordLength())));
+
+        wordLengthFrequencies.forEach(
+                (length, frequency) -> sb.append("Number of words of length %d is %d\n".formatted(length, frequency))
+        );
+
+        String mostFrequentWordLengthsAsString = mostFrequentWordLengths().stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(" & "));
+        sb.append("The most frequently occurring word length is %d, for words of length %s".formatted(highestFrequency, mostFrequentWordLengthsAsString));
+
+        return sb.toString();
+    }
+
+    private static String formatAverage(double average)
+    {
+        boolean isAverageWholeNumber = (long) average == average;
+
+        return isAverageWholeNumber ? Long.toString((long) average) : String.format("%.3f", average);
     }
 }
