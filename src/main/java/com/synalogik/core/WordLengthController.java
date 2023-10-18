@@ -17,7 +17,7 @@ public class WordLengthController
     public void encounteredWordLength(int length)
     {
         totalWordCount++;
-        wordLengthFrequencies.merge(length, 1L, (ignored, currentFrequency) -> currentFrequency + 1);
+        wordLengthFrequencies.merge(length, 1L, (currentFrequency, ignored) -> currentFrequency + 1);
         highestFrequency = Math.max(highestFrequency, wordLengthFrequencies.get(length));
     }
 
