@@ -17,12 +17,6 @@ public class WordToken implements Token
     }
 
     @Override
-    public boolean isValid()
-    {
-        return !word.isEmpty();
-    }
-
-    @Override
     public int length()
     {
         return word.length();

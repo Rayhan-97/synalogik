@@ -15,30 +15,30 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 class WordTokenTest
 {
     @Test
-    void givenNullWord_whenConstructingWordToken_thenNullPointerException()
+    void givenNullWord_whenConstructingWordToken_thenThrowNullPointerException()
     {
         assertThatThrownBy(() -> new WordToken(null))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    void givenEmptyWord_whenIsValid_thenFalse()
+    void givenEmptyWord_whenLength_thenReturnZero()
     {
-        WordToken wordToken = new WordToken("");
+        Token token = new WordToken("");
 
-        boolean valid = wordToken.isValid();
+        int length = token.length();
 
-        assertThat(valid).isFalse();
+        assertThat(length).isZero();
     }
 
     @Test
-    void givenAmpersandWord_whenIsValid_thenTrue()
+    void givenAmpersandWord_whenLength_thenReturnOne()
     {
-        WordToken wordToken = new WordToken("&");
+        Token token = new WordToken("&");
 
-        boolean valid = wordToken.isValid();
+        int length = token.length();
 
-        assertThat(valid).isTrue();
+        assertThat(length).isEqualTo(1);
     }
 
     @ParameterizedTest
@@ -64,44 +64,33 @@ class WordTokenTest
             "\"",
             "'"
     })
-    void givenInvalidOneCharacterLengthWords_whenIsValid_thenFalse(String word)
+    void givenInvalidOneCharacterLengthWords_whenLength_thenReturnZero(String word)
     {
-        WordToken wordToken = new WordToken(word);
+        Token token = new WordToken(word);
 
-        boolean valid = wordToken.isValid();
+        int length = token.length();
 
-        assertThat(valid).isFalse();
+        assertThat(length).isZero();
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"()", "(.)", "({[<>]})", "({[<.}>,<[>]})"})
-    void givenInvalidWordsWithBrackets_whenIsValid_thenFalse(String word)
+    void givenInvalidWordsWithBrackets_whenLength_thenReturnZero(String word)
     {
-        WordToken wordToken = new WordToken(word);
+        Token token = new WordToken(word);
 
-        boolean valid = wordToken.isValid();
+        int length = token.length();
 
-        assertThat(valid).isFalse();
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"a", "hello", "Morning."})
-    void givenValidWords_whenIsValid_thenTrue(String word)
-    {
-        WordToken wordToken = new WordToken(word);
-
-        boolean valid = wordToken.isValid();
-
-        assertThat(valid).isTrue();
+        assertThat(length).isZero();
     }
 
     @ParameterizedTest
     @MethodSource("inputs")
     void givenValidWords_whenLength_thenCorrectLength(String word, int expectedLength)
     {
-        WordToken wordToken = new WordToken(word);
+        Token token = new WordToken(word);
 
-        int length = wordToken.length();
+        int length = token.length();
 
         assertThat(length).isEqualTo(expectedLength);
     }
