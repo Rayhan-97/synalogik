@@ -10,13 +10,12 @@ public class NumberToken implements Token
     private static final Pattern DATE_PATTERN =
             Pattern.compile("^(\\d{2}[./-]\\d{2}[./-](\\d{2}|\\d{4}))|((\\d{2}|\\d{4})[./-]\\d{2}[./-]\\d{2})$");
 
-
     private final String word;
 
     public NumberToken(String number)
     {
         Objects.requireNonNull(number);
-        if (!NUMBER_PATTERN.matcher(number).matches() && !DATE_PATTERN.matcher(number).matches())
+        if (!isNumber(number))
         {
             throw new IllegalArgumentException("Invalid number provided: %s".formatted(number));
         }
@@ -24,6 +23,11 @@ public class NumberToken implements Token
         number = number.replaceAll(INVALID_CHARACTERS_IN_NUMBER, "");
 
         this.word = number;
+    }
+
+    public static boolean isNumber(String candidateNumber)
+    {
+        return NUMBER_PATTERN.matcher(candidateNumber).matches() || DATE_PATTERN.matcher(candidateNumber).matches();
     }
 
     @Override
