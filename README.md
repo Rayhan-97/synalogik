@@ -41,7 +41,8 @@ You can comma-separate multiple filepaths.
 ```
 
 Alternatively, you can copy your desired text files to `src/main/resources/` directory.
-You can run the program without arguments in CLI mode which will allow you to analyse files in `resources directory`.
+You can run the program without arguments in CLI mode which will allow you to analyse files in the `resources/`
+directory.
 
 ```
   mvn compile exec:java
